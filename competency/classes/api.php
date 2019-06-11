@@ -4325,36 +4325,24 @@ class api {
                         $usercompetencycourse = user_competency_course::create_relation($userid, $competencyid, $courseid);
                         $usercompetencycourse->create();
                     }
-                    // Only update the grade and proficiency if there is not already a grade.
-                    if ($usercompetencycourse->get('grade') === null) {
-                        // Set grade.
-                        $usercompetencycourse->set('grade', $grade);
-                        // Set proficiency.
-                        $usercompetencycourse->set('proficiency', $proficiency);
-                    }
+                    // Set grade.
+                    $usercompetencycourse->set('grade', $grade);
+                    // Set proficiency.
+                    $usercompetencycourse->set('proficiency', $proficiency);
 
                     // Check the course settings to see if we should push to user plans.
                     $coursesettings = course_competency_settings::get_by_courseid($courseid);
                     $setucgrade = $coursesettings->get('pushratingstouserplans');
 
                     if ($setucgrade) {
-                        // Only push to user plans if there is not already a grade.
-                        if ($usercompetency->get('grade') !== null) {
-                            $setucgrade = false;
-                        } else {
-                            $ucgrade = $grade;
-                            $ucproficiency = $proficiency;
-                        }
-                    }
-                } else {
-
-                    // When completing the competency we fetch the default grade from the competency. But we only mark
-                    // the user competency when a grade has not been set yet. Complete is an action to use with automated systems.
-                    if ($usercompetency->get('grade') === null) {
-                        $setucgrade = true;
                         $ucgrade = $grade;
                         $ucproficiency = $proficiency;
                     }
+                } else {
+                    // When completing the competency we fetch the default grade from the competency.
+                    $setucgrade = true;
+                    $ucgrade = $grade;
+                    $ucproficiency = $proficiency;
                 }
 
                 break;
